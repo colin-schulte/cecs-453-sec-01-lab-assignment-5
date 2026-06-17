@@ -1,15 +1,15 @@
-// Lab assignment 4 - Mortgage Calculator
+// Lab assignment 5 - Mortgage Calculator
 // Group: Colin Schulte, Dylan Schulte
 // mortgage_screen.dart
 
 import 'package:flutter/material.dart';
-import 'package:lab_assignment_4/mortgage.dart';
+import 'package:provider/provider.dart';
+
+import 'package:lab_assignment_4/mortgage_provider.dart';
 import 'modify_screen.dart';
 
 class MortgageScreen extends StatefulWidget {
-  final Mortgage mortgage;
-
-  const MortgageScreen({super.key, required this.mortgage});
+  const MortgageScreen({super.key});
 
   @override
   State<MortgageScreen> createState() => _MortgageScreenState();
@@ -52,7 +52,7 @@ class _MortgageScreenState extends State<MortgageScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final mortgage = widget.mortgage;
+    final mortgage = Provider.of<MortgageProvider>(context);
 
     return Scaffold(
       appBar: AppBar(title: const Text("Mortgage Calculator")),
@@ -63,28 +63,31 @@ class _MortgageScreenState extends State<MortgageScreen> {
           children: [
             Text(
               "Amount: \$${mortgage.amount.toStringAsFixed(2)}",
-              style: TextStyle(fontSize: 18),
+              style: const TextStyle(fontSize: 18),
             ),
             const SizedBox(height: 8),
 
-            Text("Years: ${mortgage.years}", style: TextStyle(fontSize: 18)),
+            Text(
+              "Years: ${mortgage.years}",
+              style: const TextStyle(fontSize: 18),
+            ),
             const SizedBox(height: 8),
 
             Text(
               "Interest Rate: ${(mortgage.rate * 100).toStringAsFixed(2)}%",
-              style: TextStyle(fontSize: 18),
+              style: const TextStyle(fontSize: 18),
             ),
             const SizedBox(height: 8),
 
             Text(
               "Monthly Payment: \$${mortgage.monthlyPayment().toStringAsFixed(2)}",
-              style: TextStyle(fontSize: 18),
+              style: const TextStyle(fontSize: 18),
             ),
             const SizedBox(height: 8),
 
             Text(
               "Total Payment: \$${mortgage.totalPayment().toStringAsFixed(2)}",
-              style: TextStyle(fontSize: 18),
+              style: const TextStyle(fontSize: 18),
             ),
 
             const SizedBox(height: 20),
@@ -105,15 +108,11 @@ class _MortgageScreenState extends State<MortgageScreen> {
 
             Center(
               child: ElevatedButton(
-                onPressed: () async {
-                  await Navigator.push(
+                onPressed: () {
+                  Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (_) => ModifyScreen(mortgage: mortgage),
-                    ),
+                    MaterialPageRoute(builder: (_) => const ModifyScreen()),
                   );
-
-                  setState(() {}); // refresh after returning
                 },
                 child: const Text("Modify Data"),
               ),

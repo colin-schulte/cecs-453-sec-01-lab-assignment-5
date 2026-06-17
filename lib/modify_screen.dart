@@ -1,14 +1,14 @@
-// Lab assignment 4 - Mortgage Calculator
+// Lab assignment 5 - Mortgage Calculator
 // Group: Colin Schulte, Dylan Schulte
 // modify_screen.dart
 
 import 'package:flutter/material.dart';
-import 'package:lab_assignment_4/mortgage.dart';
+import 'package:provider/provider.dart';
+
+import 'package:lab_assignment_4/mortgage_provider.dart';
 
 class ModifyScreen extends StatefulWidget {
-  final Mortgage mortgage;
-
-  const ModifyScreen({super.key, required this.mortgage});
+  const ModifyScreen({super.key});
 
   @override
   State<ModifyScreen> createState() => _ModifyScreenState();
@@ -18,7 +18,7 @@ class _ModifyScreenState extends State<ModifyScreen> {
   late TextEditingController _amountController;
 
   int _selectedYears = 30;
-  double _selectedRate = 3.5;
+  double _selectedRate = 0.035;
 
   final List<double> rates = List.generate(
     53,
@@ -28,13 +28,7 @@ class _ModifyScreenState extends State<ModifyScreen> {
   @override
   void initState() {
     super.initState();
-
-    _amountController = TextEditingController(
-      text: widget.mortgage.amount.toString(),
-    );
-
-    _selectedYears = widget.mortgage.years;
-    _selectedRate = widget.mortgage.rate;
+    _amountController = TextEditingController();
   }
 
   @override
@@ -45,6 +39,14 @@ class _ModifyScreenState extends State<ModifyScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final mortgage = Provider.of<MortgageProvider>(context);
+
+    if (_amountController.text.isEmpty) {
+      _amountController.text = mortgage.amount.toString();
+      _selectedYears = mortgage.years;
+      _selectedRate = mortgage.rate;
+    }
+
     return Scaffold(
       appBar: AppBar(title: const Text("Modify Mortgage")),
       body: Padding(
@@ -57,7 +59,6 @@ class _ModifyScreenState extends State<ModifyScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const Text("Years", style: TextStyle(fontSize: 18)),
-
                 Row(
                   children: [
                     Radio<int>(
@@ -148,15 +149,18 @@ class _ModifyScreenState extends State<ModifyScreen> {
                 },
               ),
             ),
+
             const Spacer(),
 
             ElevatedButton(
-              onPressed: () {
-                widget.mortgage.setAmount(double.parse(_amountController.text));
+              onPressed: () async {
+                final amount = double.tryParse(_amountController.text) ?? 0;
 
-                widget.mortgage.setYears(_selectedYears);
+                await mortgage.setAmount(amount);
+                await mortgage.setYears(_selectedYears);
+                await mortgage.setRate(_selectedRate);
 
-                widget.mortgage.setRate(_selectedRate);
+                if (!mounted) return;
 
                 Navigator.pop(context);
               },

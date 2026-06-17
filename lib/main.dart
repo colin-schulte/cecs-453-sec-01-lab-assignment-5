@@ -3,11 +3,18 @@
 // main.dart
 
 import 'package:flutter/material.dart';
-import 'package:lab_assignment_4/mortgage.dart';
+import 'package:provider/provider.dart';
+
+import 'package:lab_assignment_4/mortgage_provider.dart';
 import 'package:lab_assignment_4/mortgage_screen.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => MortgageProvider(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -18,7 +25,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Mortgage Calculator',
-      home: MortgageScreen(mortgage: Mortgage()),
+      home: MortgageScreen(),
     );
   }
 }
